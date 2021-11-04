@@ -9,7 +9,7 @@ $ManifestContent = $ManifestContent.Replace("<ModuleVersion>", "1." + $env:GITHU
 $FunctionsFolderPath = "$PSScriptRoot\..\functions"
 if ((Test-Path -Path $FunctionsFolderPath) -and ($FunctionNames = Get-ChildItem -Path $FunctionsFolderPath -Filter '*.ps1' | Select-Object -ExpandProperty BaseName))
 {
-    $FunctionStrings = "'$($FunctionNames -join "','")'"
+    $FunctionStrings = $FunctionNames -join "','"
 }
 else
 {
