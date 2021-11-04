@@ -8,4 +8,4 @@ jobs:
       - name: Check out repo        
         uses: actions/checkout@v2
       - run: |
-          ./VirgilsPSToolkit/build/variables.ps1
+          ./VirgilsPSToolkit/build/build.ps1
