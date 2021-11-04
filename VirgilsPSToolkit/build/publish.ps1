@@ -1,0 +1,1 @@
+Publish-Module -Path $PSScriptRoot/.. -NuGetApiKey $env:NUGET_KEY -Verbose
