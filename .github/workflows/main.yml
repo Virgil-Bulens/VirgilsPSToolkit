@@ -8,10 +8,10 @@ jobs:
   build:
     runs-on: windows-2019
     steps:
-      - name: Check out repo        
-        uses: actions/checkout@v2
+      - uses: actions/checkout@v2
+      - name: Build and publish        
         env:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
-      - run: |
+        run: |
           ./VirgilsPSToolkit/build/build.ps1
-          Publish-Module -Path /VirgilsPSToolkit -NuGetApiKey $env:NUGET_KEY -Verbose
+          ./VirgilsPSToolkit/build/publish.ps1
