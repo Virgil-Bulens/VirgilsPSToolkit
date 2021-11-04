@@ -14,3 +14,4 @@ jobs:
           NUGET_KEY: ${{ secrets.NUGET_KEY }}
       - run: |
           ./VirgilsPSToolkit/build/build.ps1
+          Publish-Module -Path /VirgilsPSToolkit -NuGetApiKey $env:NUGET_KEY -Verbose
