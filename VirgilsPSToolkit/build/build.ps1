@@ -1,1 +1,1 @@
-. $PSScriptRoot\testing.ps1
+. $PSScriptRoot\variables.ps1
