@@ -8,7 +8,7 @@ foreach ($Function in $Functions)
 {
     try
     {
-        Write-Verbose "Importing $($Function.FullName)"        
+        Write-Verbose "Importing $($Function.FullName)"
         . $Function.FullName
     }
     catch
