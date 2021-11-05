@@ -15,7 +15,11 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v2
 
-      - name: Build       
+      - name: Test
+        run: |
+          ./VirgilsPSToolkit/build/test.ps1
+
+      - name: Build
         run: |
           ./VirgilsPSToolkit/build/build.ps1
           
