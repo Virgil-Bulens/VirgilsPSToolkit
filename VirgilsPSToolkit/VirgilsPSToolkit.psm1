@@ -18,3 +18,6 @@ foreach ($Function in $Functions)
 
     Export-ModuleMember -Function $Function.BaseName
 }
+
+
+# Test comment
