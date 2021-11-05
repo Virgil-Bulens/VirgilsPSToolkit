@@ -3,6 +3,10 @@ name: CI
 on: 
   push:
     branches: [ main ]
+    paths:
+      - '/VirgilsPSToolkit/functions/**.ps1'
+      - '/VirgilsPSToolkit/VirgilsPSToolkit.psd1'
+      - '/VirgilsPSToolkit/VirgilsPSToolkit.psm1'
 
 jobs:
   build:
