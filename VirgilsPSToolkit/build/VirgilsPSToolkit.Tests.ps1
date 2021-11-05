@@ -2,7 +2,7 @@ Install-Module -Name PSScriptAnalyzer -Force
 
 Describe 'Module-level tests' {
     It 'the module imports successfully' {
-        { Import-Module "$PSScriptRoot\..\VirgilsPSToolkit.psm1" -ErrorAction Stop } | Should -not throw
+        { Import-Module "$PSScriptRoot\..\VirgilsPSToolkit.psm1" -ErrorAction Stop } | Should -Not -Throw
     }
 
     It 'the module has an associated manifest' {
