@@ -1,0 +1,20 @@
+name: not main
+
+on: 
+  push:
+    branches-ignore: [ main ]
+    paths:
+      - 'VirgilsPSToolkit/functions/**.ps1'
+      - 'VirgilsPSToolkit/VirgilsPSToolkit.psd1'
+      - 'VirgilsPSToolkit/VirgilsPSToolkit.psm1'
+
+jobs:
+  build:
+    runs-on: windows-2019
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v2
+
+      - name: Test
+        run: |
+          ./VirgilsPSToolkit/build/test.ps1
