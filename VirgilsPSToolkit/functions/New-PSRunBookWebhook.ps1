@@ -37,16 +37,14 @@ Param(
 # Variables
 #
 `$ErrorActionPreference = "Stop"
-`$RunbookName = "Sync-TraxData"
+`$RunbookName = <RunbookNamePlaceholder>
 
 
 #
 # WebhookData
 #
 `$WebhookParameters = @(
-    "path",
-    "storageAccountName",
-    "storageContainerName"
+    <ParametersPlaceholder>
 )
 
 `$Body = ConvertFrom-Json -InputObject `$WebhookData.RequestBody
@@ -110,7 +108,10 @@ foreach (`$AutomationAccount in `$AutomationAccounts)
 #
 # Main
 #
-`$RunbookParameters.Add('Parameters', `$ChildRunbookParameters)
+if ( `$ChildRunbookParameters.Count -gt 0 )
+{
+    `$RunbookParameters.Add('Parameters', `$ChildRunbookParameters)
+}
 Start-AzAutomationRunbook @RunbookParameters
 "@
     }
@@ -121,6 +122,17 @@ Start-AzAutomationRunbook @RunbookParameters
         [array]$Parameters = $Command.ParameterSets.Parameters | `
                              Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
                              ForEach-Object Name
+        
+        $ParametersToInsert = @()
+
+        foreach ($Parameter in $Parameters) {
+            $ParametersToInsert += "`"$Parameter`","
+        }
+
+        $ParametersToInsert = ($ParametersToInsert | Out-String).Trim() -replace ".$"
+
+        # Replace content
+
 
         New-Item -Path $WebhookFileName `
                  -ItemType File `
