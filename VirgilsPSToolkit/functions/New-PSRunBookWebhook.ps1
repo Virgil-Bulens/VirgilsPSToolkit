@@ -1,7 +1,8 @@
 #
 # Create webhook runbook from existing runbook
 #
-function New-PSRunBookWebhook {
+function New-PSRunBookWebhook
+{
     [CmdletBinding()]
     param (
         # Path to the runbook to create webhook from
@@ -13,7 +14,8 @@ function New-PSRunBookWebhook {
         $Runbook
     )
     
-    begin {
+    begin
+    {
         $ErrorActionPreference = "Stop"
         $RunbookFile = Get-Item -Path $Runbook
         $WebhookFileName = "Invoke-" + ( $RunbookFile.BaseName -replace "-" ) + "FromWebhook.ps1"
@@ -116,16 +118,18 @@ Start-AzAutomationRunbook @RunbookParameters
 "@
     }
     
-    process {
+    process
+    {
         # Get runbook's parameters
         $Command = Get-Command $Runbook
         [array]$Parameters = $Command.ParameterSets.Parameters | `
-                             Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
-                             ForEach-Object Name
+            Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
+            ForEach-Object Name
         
         $ParametersToInsert = @()
 
-        foreach ($Parameter in $Parameters) {
+        foreach ($Parameter in $Parameters)
+        {
             $ParametersToInsert += "`"$Parameter`","
         }
 
@@ -134,15 +138,14 @@ Start-AzAutomationRunbook @RunbookParameters
         # Replace content
         $Content = $Content -replace "<RunbookNamePlaceholder>", "`"$($RunbookFile.BaseName)`"" -replace "<ParametersPlaceholder>", $ParametersToInsert
 
-
-
-        New-Item -Path $WebhookFileName `
-                 -ItemType File `
-                 -Value $Content `
-                 -Force
     }
     
-    end {
-        
+    end
+    {
+        # Write file
+        New-Item -Path $WebhookFileName `
+            -ItemType File `
+            -Value $Content `
+            -Force
     }
 }
