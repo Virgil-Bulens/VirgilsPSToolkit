@@ -16,10 +16,14 @@ function New-PSRunBookWebhook {
     begin {
         $ErrorActionPreference = "Stop"
         $RunbookFile = Get-Item -Path $Runbook
+        $WebhookFileName = "Invoke-" + ( $RunbookFile.BaseName -replace "-" ) + "FromWebhook.ps1"
     }
     
     process {
-        
+        New-Item -Path $WebhookFileName `
+                 -ItemType File `
+                 -Value $Content `
+                 -Force
     }
     
     end {
