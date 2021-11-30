@@ -132,6 +132,8 @@ Start-AzAutomationRunbook @RunbookParameters
         $ParametersToInsert = ($ParametersToInsert | Out-String).Trim() -replace ".$"
 
         # Replace content
+        $Content = $Content -replace "<RunbookNamePlaceholder>", "`"$($RunbookFile.BaseName)`"" -replace "<ParametersPlaceholder>", $ParametersToInsert
+
 
 
         New-Item -Path $WebhookFileName `
