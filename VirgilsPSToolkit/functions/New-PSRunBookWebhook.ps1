@@ -17,6 +17,102 @@ function New-PSRunBookWebhook {
         $ErrorActionPreference = "Stop"
         $RunbookFile = Get-Item -Path $Runbook
         $WebhookFileName = "Invoke-" + ( $RunbookFile.BaseName -replace "-" ) + "FromWebhook.ps1"
+
+        $Content = @"
+#
+# Parameters
+#
+Param(
+    # WebhookData
+    [Parameter(
+        Mandatory = `$true,
+        Position = 0
+    )]
+    [object]
+    `$WebhookData
+)
+
+
+#
+# Variables
+#
+`$ErrorActionPreference = "Stop"
+`$RunbookName = "Sync-TraxData"
+
+
+#
+# WebhookData
+#
+`$WebhookParameters = @(
+    "path",
+    "storageAccountName",
+    "storageContainerName"
+)
+
+`$Body = ConvertFrom-Json -InputObject `$WebhookData.RequestBody
+
+`$ChildRunbookParameters = @{}
+
+foreach (`$Parameter in $`WebhookParameters)
+{
+    `$Variable = New-Variable -Name `$Parameter ``
+                              -Value `$Body.`$Parameter ``
+                              -PassThru
+    `$ChildRunbookParameters.Add(`$Variable.Name, `$Variable.Value)
+}
+
+
+#
+# Authentication
+#
+# Az
+Connect-AzAccount -Identity | Out-Null
+
+
+#
+# Metadata
+#
+`$AutomationMetaData = @{}
+
+`$JobId = `$PSPrivateMetadata.JobId.Guid
+`$AutomationAccounts = Get-AzResource -ResourceType Microsoft.Automation/AutomationAccounts
+
+foreach (`$AutomationAccount in `$AutomationAccounts)
+{
+    `$Job = Get-AzAutomationJob -Id `$JobId ``
+                                -ResourceGroupName `$AutomationAccount.ResourceGroupName ``
+                                -AutomationAccountName `$AutomationAccount.Name ``
+                                -ErrorAction SilentlyContinue
+
+    if (!([string]::IsNullOrEmpty(`$Job)))
+    {
+        `$AutomationMetaData.Add("SubscriptionId", `$AutomationAccount.SubscriptionId)
+        `$AutomationMetaData.Add("Location", `$AutomationAccount.Location)
+        `$AutomationMetaData.Add("ResourceGroupName", `$Job.ResourceGroupName)
+        `$AutomationMetaData.Add("AutomationAccountName", `$Job.AutomationAccountName)
+        `$AutomationMetaData.Add("RunbookName", `$Job.RunbookName)
+        `$AutomationMetaData.Add("JobId", `$Job.JobId.Guid)
+        break;
+    }
+}
+
+`$RunbookResourceGroupName = `$AutomationMetaData.ResourceGroupName
+`$RunbookAutomationAccountName = `$AutomationMetaData.AutomationAccountName
+
+`$RunbookParameters = @{
+    'Name'                  = `$RunbookName
+    'Wait'                  = `$true
+    'AutomationAccountName' = `$RunbookAutomationAccountName
+    'ResourceGroupName'     = `$RunbookResourceGroupName
+
+}
+
+#
+# Main
+#
+`$RunbookParameters.Add('Parameters', `$ChildRunbookParameters)
+Start-AzAutomationRunbook @RunbookParameters
+"@
     }
     
     process {
