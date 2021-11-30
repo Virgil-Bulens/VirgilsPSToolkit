@@ -116,6 +116,12 @@ Start-AzAutomationRunbook @RunbookParameters
     }
     
     process {
+        # Get runbook's parameters
+        $Command = Get-Command $Runbook
+        [array]$Parameters = $Command.ParameterSets.Parameters | `
+                             Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
+                             ForEach-Object Name
+
         New-Item -Path $WebhookFileName `
                  -ItemType File `
                  -Value $Content `
