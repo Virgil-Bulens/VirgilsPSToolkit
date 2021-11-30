@@ -122,10 +122,17 @@ Start-AzAutomationRunbook @RunbookParameters
     {
         # Get runbook's parameters
         $Command = Get-Command $Runbook
-        [array]$Parameters = $Command.ParameterSets.Parameters | `
-            Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
-            ForEach-Object Name
-        
+        try
+        {
+            [array]$Parameters = $Command.ParameterSets.Parameters | `
+                Where-Object { ($_.Attributes.TypeId.Name -eq "ArgumentTypeConverterAttribute") -or ( $_.ParameterType.Name -eq "Object" ) } | `
+                ForEach-Object Name
+        }
+        catch
+        {
+            [array]$Parameters = @()
+        }
+
         $ParametersToInsert = @()
 
         foreach ($Parameter in $Parameters)
