@@ -45,7 +45,8 @@ Param(
 
 foreach (`$Variable in `$AutomationVariables)
 {
-    New-Variable -Name `$Variable -Value ( Get-AutomationVariable -Name `$Variable )
+    New-Variable -Name `$Variable ``
+        -Value ( Get-AutomationVariable -Name `$Variable )
 }
 
 
@@ -78,7 +79,11 @@ Connect-AzureAD @ConnectionParameters | Out-Null
     
     process
     {
-        New-Item -Path $Path -Name $Name -ItemType File -Value $Content -Force
+        New-Item -Path $Path `
+            -Name $Name `
+            -ItemType File `
+            -Value $Content `
+            -Force
     }
     
     end
