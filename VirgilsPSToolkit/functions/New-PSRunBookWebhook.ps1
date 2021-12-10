@@ -55,7 +55,7 @@ Param(
 
 foreach (`$Parameter in $`WebhookParameters)
 {
-    `$Variable = New-Variable -Name `$Parameter ``
+    `$Variable = Set-Variable -Name `$Parameter ``
                               -Value `$Body.`$Parameter ``
                               -PassThru
     `$ChildRunbookParameters.Add(`$Variable.Name, `$Variable.Value)

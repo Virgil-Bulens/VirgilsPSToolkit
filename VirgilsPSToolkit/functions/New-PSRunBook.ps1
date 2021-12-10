@@ -45,7 +45,7 @@ Param(
 
 foreach (`$Variable in `$AutomationVariables)
 {
-    New-Variable -Name `$Variable ``
+    Set-Variable -Name `$Variable ``
         -Value ( Get-AutomationVariable -Name `$Variable )
 }
 
