@@ -39,35 +39,32 @@ Param(
 # Variables
 #
 `$ErrorActionPreference = "Stop"
-`$AutomationVariables = @(
-
-)
-
-foreach (`$Variable in `$AutomationVariables)
-{
-    Set-Variable -Name `$Variable ``
-        -Value ( Get-AutomationVariable -Name `$Variable )
-}
 
 
 #
 # Authentication
 #
 # Az
-Connect-AzAccount -Identity | Out-Null
-
-# Azure AD
-`$Context = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile.DefaultContext
-`$AADToken = [Microsoft.Azure.Commands.Common.Authentication.AzureSession]::Instance.AuthenticationFactory.Authenticate(`$Context.Account, `$Context.Environment, `$Context.Tenant.Id.ToString(), `$null, [Microsoft.Azure.Commands.Common.Authentication.ShowDialog]::Never, `$null, "https://graph.windows.net").AccessToken
-`$TenantId = `$Context.Tenant.Id
-
-`$ConnectionParameters = @{
-    'AadAccessToken' = `$AADToken
-    'AccountId'      = `$Context.Account.Id 
-    'TenantId'       = `$TenantId
+if ( -not ( Get-AzContext -ErrorAction SilentlyContinue ) )
+{
+Connect-AzAccount -Identity | `
+    Out-Null
 }
 
-Connect-AzureAD @ConnectionParameters | Out-Null
+# Azure AD
+`$Context = Get-AzContext 
+
+`$ConnectionParameters = @{
+    'AadAccessToken' = Get-AzAccessToken -ResourceTypeName AadGraph | `
+        ForEach-Object token
+    'AccountId'      = `$Context.Account
+    'TenantId'       = `$Context.Tenant
+    'MsAccessToken'  = Get-AzAccessToken -ResourceTypeName MSGraph | `
+        ForEach-Object token
+}
+
+Connect-AzureAD @ConnectionParameters | `
+    Out-Null
 
 
 #
