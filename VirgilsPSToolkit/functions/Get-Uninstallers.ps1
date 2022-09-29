@@ -41,7 +41,8 @@ function Get-Uninstallers
 
     foreach ( $Path in $Paths )
     {
-        $List += Get-ChildItem -Path $Path | `
+        $List += Get-ChildItem -Path $Path `
+            -ErrorAction SilentlyContinue | `
             Get-ItemProperty | `
             Select-Object DisplayName, UninstallString, QuietUninstallString | `
             Where-Object DisplayName -Like "*$($SearchString)*"
