@@ -45,7 +45,8 @@ function Get-Uninstallers
             -ErrorAction SilentlyContinue | `
             Get-ItemProperty | `
             Select-Object DisplayName, UninstallString, QuietUninstallString | `
-            Where-Object DisplayName -Like "*$($SearchString)*"
+            Where-Object DisplayName -Like "*$($SearchString)*" | `
+            Where-Object { ( ( -not ( [string]::IsNullOrEmpty($_.UninstallString) ) ) -or ( -not ( [string]::IsNullOrEmpty($_.QuietUninstallString) ) ) ) }
     }
 
     $List | `
